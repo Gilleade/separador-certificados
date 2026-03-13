@@ -71,7 +71,7 @@ class MainWindow:
 
         ttk.Label(
             header_frame,
-            text=f"Por {APP_AUTHOR} - {APP_CONTACT_EMAIL}",
+            text=f"Por {APP_AUTHOR} • {APP_CONTACT_EMAIL}",
             style="Author.TLabel",
         ).pack(anchor="w", pady=(2, 0))
 
@@ -106,6 +106,8 @@ class MainWindow:
             mode_card,
             text="",
             style="CardText.TLabel",
+            wraplength=300,
+            justify="left",
         )
         self.mode_help_label.pack(anchor="w", pady=(6, 0))
 
@@ -121,44 +123,20 @@ class MainWindow:
 
         self.selected_files_box = tk.Listbox(
             files_card,
-            height=5,
+            height=8,
             font=("Segoe UI", 9),
             activestyle="none",
             relief="solid",
             bd=1,
             highlightthickness=0,
         )
-        self.selected_files_box.pack(fill="x")
+        self.selected_files_box.pack(fill="both", expand=True)
 
         middle_row = ttk.Frame(main_frame, style="App.TFrame")
         middle_row.pack(fill="x", pady=(0, 8))
 
-        identification_card = ttk.Frame(middle_row, style="Card.TFrame", padding=12)
-        identification_card.pack(side="left", fill="both", expand=True)
-
         actions_card = ttk.Frame(middle_row, style="Card.TFrame", padding=12)
-        actions_card.pack(side="left", fill="both", expand=True, padx=(8, 0))
-
-        ttk.Label(
-            identification_card,
-            text="Identificação automática",
-            style="CardTitle.TLabel",
-        ).pack(anchor="w")
-
-        info_grid = ttk.Frame(identification_card, style="Card.TFrame")
-        info_grid.pack(fill="x", pady=(6, 0))
-
-        ttk.Label(info_grid, text="Colaborador", style="CardText.TLabel").grid(row=0, column=0, sticky="w", pady=2)
-        self.person_label = ttk.Label(info_grid, text="-", style="CardText.TLabel")
-        self.person_label.grid(row=0, column=1, sticky="w", padx=(8, 0), pady=2)
-
-        ttk.Label(info_grid, text="Arquivo NRS", style="CardText.TLabel").grid(row=1, column=0, sticky="w", pady=2)
-        self.nrs_label = ttk.Label(info_grid, text="-", style="CardText.TLabel")
-        self.nrs_label.grid(row=1, column=1, sticky="w", padx=(8, 0), pady=2)
-
-        ttk.Label(info_grid, text="Arquivo NR-37", style="CardText.TLabel").grid(row=2, column=0, sticky="w", pady=2)
-        self.nr37_label = ttk.Label(info_grid, text="-", style="CardText.TLabel")
-        self.nr37_label.grid(row=2, column=1, sticky="w", padx=(8, 0), pady=2)
+        actions_card.pack(fill="x", expand=True)
 
         ttk.Label(actions_card, text="Saída e processamento", style="CardTitle.TLabel").pack(anchor="w")
 
@@ -179,28 +157,28 @@ class MainWindow:
         )
         self.open_output_button.pack(side="left", padx=(6, 0))
 
-        self.output_label = ttk.Label(
-            actions_card,
-            text="Pasta de saída: nenhuma pasta selecionada.",
-            style="CardText.TLabel",
-        )
-        self.output_label.pack(anchor="w", pady=(0, 8))
-
         self.process_button = ttk.Button(
-            actions_card,
+            output_buttons_row,
             text="Processar",
             state="disabled",
             command=self.process_files,
             style="Primary.TButton",
         )
-        self.process_button.pack(anchor="w")
+        self.process_button.pack(side="left", padx=(6, 0))
+
+        self.output_label = ttk.Label(
+            actions_card,
+            text="Pasta de saída: nenhuma pasta selecionada.",
+            style="CardText.TLabel",
+        )
+        self.output_label.pack(anchor="w", pady=(0, 6))
 
         self.status_line = ttk.Label(
             actions_card,
             text="Status: aguardando seleção dos arquivos.",
             style="CardText.TLabel",
         )
-        self.status_line.pack(anchor="w", pady=(8, 0))
+        self.status_line.pack(anchor="w")
 
         lower_row = ttk.Frame(main_frame, style="App.TFrame")
         lower_row.pack(fill="both", expand=True)
@@ -232,6 +210,8 @@ class MainWindow:
             summary_card,
             text="Nenhum arquivo selecionado.",
             style="CardText.TLabel",
+            wraplength=260,
+            justify="left",
         )
         self.summary_line_1.pack(anchor="w", pady=(6, 4))
 
@@ -239,6 +219,8 @@ class MainWindow:
             summary_card,
             text="",
             style="CardText.TLabel",
+            wraplength=260,
+            justify="left",
         )
         self.summary_line_2.pack(anchor="w", pady=4)
 
@@ -246,6 +228,8 @@ class MainWindow:
             summary_card,
             text="",
             style="CardText.TLabel",
+            wraplength=260,
+            justify="left",
         )
         self.summary_line_3.pack(anchor="w", pady=4)
 
@@ -304,11 +288,6 @@ class MainWindow:
         self.summary_line_2.config(text="")
         self.summary_line_3.config(text="")
 
-    def _reset_identification(self):
-        self.person_label.config(text="-")
-        self.nrs_label.config(text="-")
-        self.nr37_label.config(text="-")
-
     def on_mode_change(self, initial=False):
         self.selected_files = []
         self.individual_ready = False
@@ -316,7 +295,6 @@ class MainWindow:
 
         self.selected_files_box.delete(0, "end")
         self._reset_summary()
-        self._reset_identification()
         if not initial:
             self._reset_log()
 
@@ -356,8 +334,6 @@ class MainWindow:
         for file_path in self.selected_files:
             self.selected_files_box.insert("end", Path(file_path).name)
 
-        self._reset_identification()
-
         if current_mode == "individual":
             self._analyze_individual_selection()
         else:
@@ -394,10 +370,6 @@ class MainWindow:
         }
 
         collaborator_name = next(iter(detected_names)) if len(detected_names) == 1 else "-"
-
-        self.person_label.config(text=collaborator_name)
-        self.nrs_label.config(text=Path(nrs_files[0].original_path).name if nrs_files else "-")
-        self.nr37_label.config(text=Path(nr37_files[0].original_path).name if nr37_files else "-")
 
         self.summary_line_1.config(text=f"Colaborador: {collaborator_name}")
         self.summary_line_2.config(
@@ -473,10 +445,6 @@ class MainWindow:
         self.summary_line_3.config(
             text=f"Arquivos não identificados: {len(grouping_result.unidentified_files)}"
         )
-
-        self.person_label.config(text="-")
-        self.nrs_label.config(text="-")
-        self.nr37_label.config(text="-")
 
         self.batch_ready = len(self.selected_files) > 0
 
