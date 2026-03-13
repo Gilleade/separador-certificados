@@ -10,3 +10,6 @@ WINDOW_HEIGHT = 620
 SUPPORTED_PDF_EXTENSIONS = [".pdf"]
 
 DEFAULT_OUTPUT_FOLDER_NAME = "output"
+
+RUNTIME_FOLDER_NAME = "runtime"
+RUNTIME_REPORT_FILE = "relatorio_processamento.txt"

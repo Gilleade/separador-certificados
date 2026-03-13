@@ -1,0 +1,20 @@
+RELATORIO DE PROCESSAMENTO
+
+Modo: Lote
+Data/Hora: 13/03/2026 08:52:08
+Total de PDFs selecionados: 2
+Total de grupos identificados: 1
+
+RESUMO
+- Processados com sucesso: 1
+- Nao processados: 0
+- Erros de execucao: 0
+
+PROCESSADOS COM SUCESSO
+- LILIANA RIBEIRO -> 15 arquivos gerados
+
+NAO PROCESSADOS
+- Nenhum
+
+ERROS DE EXECUCAO
+- Nenhum
