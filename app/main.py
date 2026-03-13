@@ -1,8 +1,8 @@
 import tkinter as tk
-from pathlib import Path
 
 from app.config.app_config import WINDOW_HEIGHT, WINDOW_TITLE, WINDOW_WIDTH
 from app.gui.main_window import MainWindow
+from app.utils.runtime_paths import get_asset_path
 
 
 def main():
@@ -11,20 +11,21 @@ def main():
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     root.minsize(960, 700)
 
-    icon_path = Path("assets/app_icon.ico")
+    icon_path = get_asset_path("app_icon.ico")
     if icon_path.exists():
         try:
             root.iconbitmap(default=str(icon_path))
         except Exception:
             pass
 
-        try:
-            import ctypes
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                "gilleade.separador.certificados"
-            )
-        except Exception:
-            pass
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "gilleade.separador.certificados"
+        )
+    except Exception:
+        pass
 
     MainWindow(root)
     root.mainloop()

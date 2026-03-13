@@ -2,7 +2,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-from app.config.app_config import RUNTIME_FOLDER_NAME, RUNTIME_REPORT_FILE
+from app.config.app_config import RUNTIME_REPORT_FILE
+from app.utils.runtime_paths import get_runtime_file_path
 
 
 @dataclass
@@ -35,7 +36,6 @@ class ExecutionReport:
 
     def build_text(self) -> str:
         now_text = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
         lines = [
             "RELATORIO DE PROCESSAMENTO",
             "",
@@ -83,9 +83,7 @@ class ExecutionReport:
 
 
 def get_runtime_report_path() -> Path:
-    runtime_dir = Path(RUNTIME_FOLDER_NAME)
-    runtime_dir.mkdir(parents=True, exist_ok=True)
-    return runtime_dir / RUNTIME_REPORT_FILE
+    return get_runtime_file_path(RUNTIME_REPORT_FILE)
 
 
 def save_execution_report(report: ExecutionReport) -> Path:

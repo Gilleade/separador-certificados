@@ -1,7 +1,7 @@
 RELATORIO DE PROCESSAMENTO
 
 Modo: Lote
-Data/Hora: 13/03/2026 10:22:45
+Data/Hora: 13/03/2026 11:07:23
 Total de PDFs selecionados: 2
 Total de grupos identificados: 1
 
