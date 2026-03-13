@@ -8,7 +8,7 @@ def main():
     root = tk.Tk()
     root.title(WINDOW_TITLE)
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
-    root.minsize(820, 560)
+    root.minsize(960, 700)
 
     MainWindow(root)
 

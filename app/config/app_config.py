@@ -1,11 +1,11 @@
 APP_NAME = "Separador de Certificados Corporativos"
-APP_VERSION = "1.0.0"
+APP_VERSION = "2.0.0"
 APP_AUTHOR = "Gilleade Gonçalves Silva"
 APP_CONTACT_EMAIL = "gilleadesilva@gmail.com"
 
 WINDOW_TITLE = f"{APP_NAME} - v{APP_VERSION}"
-WINDOW_WIDTH = 900
-WINDOW_HEIGHT = 620
+WINDOW_WIDTH = 1040
+WINDOW_HEIGHT = 760
 
 SUPPORTED_PDF_EXTENSIONS = [".pdf"]
 

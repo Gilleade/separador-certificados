@@ -20,7 +20,7 @@ class MainWindow:
         self.output_folder = ""
         self.last_report_path = ""
 
-        self.mode_var = tk.StringVar(value="individual")
+        self.mode_var = tk.StringVar(value="batch")
 
         self.individual_ready = False
         self.batch_ready = False
@@ -28,6 +28,7 @@ class MainWindow:
         self._configure_style()
         self._build_ui()
         self._update_buttons()
+        self.on_mode_change(initial=True)
 
     def _configure_style(self):
         style = ttk.Style()
@@ -41,19 +42,20 @@ class MainWindow:
 
         style.configure("App.TFrame", background="#eef2f7")
         style.configure("Card.TFrame", background="#ffffff")
-        style.configure("CardTitle.TLabel", background="#ffffff", font=("Segoe UI", 10, "bold"))
+        style.configure("CardTitle.TLabel", background="#ffffff", font=("Segoe UI", 10))
         style.configure("CardText.TLabel", background="#ffffff", font=("Segoe UI", 10))
-        style.configure("Header.TLabel", background="#eef2f7", font=("Segoe UI", 20, "bold"))
+        style.configure("Header.TLabel", background="#eef2f7", font=("Segoe UI", 16))
         style.configure("SubHeader.TLabel", background="#eef2f7", font=("Segoe UI", 10))
+        style.configure("Author.TLabel", background="#eef2f7", font=("Segoe UI", 9))
         style.configure("Footer.TLabel", background="#eef2f7", font=("Segoe UI", 9))
-        style.configure("Primary.TButton", font=("Segoe UI", 10, "bold"))
+        style.configure("Primary.TButton", font=("Segoe UI", 10))
 
     def _build_ui(self):
-        main_frame = ttk.Frame(self.root, padding=20, style="App.TFrame")
+        main_frame = ttk.Frame(self.root, padding=16, style="App.TFrame")
         main_frame.pack(fill="both", expand=True)
 
         header_frame = ttk.Frame(main_frame, style="App.TFrame")
-        header_frame.pack(fill="x", pady=(0, 16))
+        header_frame.pack(fill="x", pady=(0, 12))
 
         ttk.Label(
             header_frame,
@@ -65,29 +67,24 @@ class MainWindow:
             header_frame,
             text="Escolha o modo de uso, selecione os PDFs e gere os certificados automaticamente.",
             style="SubHeader.TLabel",
-        ).pack(anchor="w", pady=(4, 0))
+        ).pack(anchor="w", pady=(3, 0))
 
-        content_frame = ttk.Frame(main_frame, style="App.TFrame")
-        content_frame.pack(fill="both", expand=True)
+        ttk.Label(
+            header_frame,
+            text=f"Por {APP_AUTHOR} - {APP_CONTACT_EMAIL}",
+            style="Author.TLabel",
+        ).pack(anchor="w", pady=(2, 0))
 
-        top_row = ttk.Frame(content_frame, style="App.TFrame")
-        top_row.pack(fill="x", pady=(0, 12))
+        top_row = ttk.Frame(main_frame, style="App.TFrame")
+        top_row.pack(fill="x", pady=(0, 8))
 
-        mode_card = ttk.Frame(top_row, style="Card.TFrame", padding=14)
+        mode_card = ttk.Frame(top_row, style="Card.TFrame", padding=12)
         mode_card.pack(side="left", fill="both", expand=True)
 
-        files_card = ttk.Frame(top_row, style="Card.TFrame", padding=14)
-        files_card.pack(side="left", fill="both", expand=True, padx=(12, 0))
+        files_card = ttk.Frame(top_row, style="Card.TFrame", padding=12)
+        files_card.pack(side="left", fill="both", expand=True, padx=(8, 0))
 
         ttk.Label(mode_card, text="Modo de uso", style="CardTitle.TLabel").pack(anchor="w")
-
-        ttk.Radiobutton(
-            mode_card,
-            text="Processamento individual",
-            value="individual",
-            variable=self.mode_var,
-            command=self.on_mode_change,
-        ).pack(anchor="w", pady=(10, 2))
 
         ttk.Radiobutton(
             mode_card,
@@ -95,14 +92,22 @@ class MainWindow:
             value="batch",
             variable=self.mode_var,
             command=self.on_mode_change,
+        ).pack(anchor="w", pady=(6, 2))
+
+        ttk.Radiobutton(
+            mode_card,
+            text="Processamento individual",
+            value="individual",
+            variable=self.mode_var,
+            command=self.on_mode_change,
         ).pack(anchor="w", pady=(0, 2))
 
         self.mode_help_label = ttk.Label(
             mode_card,
-            text="No individual, você pode processar 1 ou 2 PDFs de um único colaborador.",
+            text="",
             style="CardText.TLabel",
         )
-        self.mode_help_label.pack(anchor="w", pady=(10, 0))
+        self.mode_help_label.pack(anchor="w", pady=(6, 0))
 
         ttk.Label(files_card, text="Arquivos PDF", style="CardTitle.TLabel").pack(anchor="w")
 
@@ -112,11 +117,11 @@ class MainWindow:
             command=self.select_pdf_files,
             style="Primary.TButton",
         )
-        self.select_files_button.pack(anchor="w", pady=(10, 10))
+        self.select_files_button.pack(anchor="w", pady=(6, 8))
 
         self.selected_files_box = tk.Listbox(
             files_card,
-            height=6,
+            height=5,
             font=("Segoe UI", 9),
             activestyle="none",
             relief="solid",
@@ -125,14 +130,101 @@ class MainWindow:
         )
         self.selected_files_box.pack(fill="x")
 
-        middle_row = ttk.Frame(content_frame, style="App.TFrame")
-        middle_row.pack(fill="x", pady=(0, 12))
+        middle_row = ttk.Frame(main_frame, style="App.TFrame")
+        middle_row.pack(fill="x", pady=(0, 8))
 
-        summary_card = ttk.Frame(middle_row, style="Card.TFrame", padding=14)
-        summary_card.pack(side="left", fill="both", expand=True)
+        identification_card = ttk.Frame(middle_row, style="Card.TFrame", padding=12)
+        identification_card.pack(side="left", fill="both", expand=True)
 
-        output_card = ttk.Frame(middle_row, style="Card.TFrame", padding=14)
-        output_card.pack(side="left", fill="both", expand=True, padx=(12, 0))
+        actions_card = ttk.Frame(middle_row, style="Card.TFrame", padding=12)
+        actions_card.pack(side="left", fill="both", expand=True, padx=(8, 0))
+
+        ttk.Label(
+            identification_card,
+            text="Identificação automática",
+            style="CardTitle.TLabel",
+        ).pack(anchor="w")
+
+        info_grid = ttk.Frame(identification_card, style="Card.TFrame")
+        info_grid.pack(fill="x", pady=(6, 0))
+
+        ttk.Label(info_grid, text="Colaborador", style="CardText.TLabel").grid(row=0, column=0, sticky="w", pady=2)
+        self.person_label = ttk.Label(info_grid, text="-", style="CardText.TLabel")
+        self.person_label.grid(row=0, column=1, sticky="w", padx=(8, 0), pady=2)
+
+        ttk.Label(info_grid, text="Arquivo NRS", style="CardText.TLabel").grid(row=1, column=0, sticky="w", pady=2)
+        self.nrs_label = ttk.Label(info_grid, text="-", style="CardText.TLabel")
+        self.nrs_label.grid(row=1, column=1, sticky="w", padx=(8, 0), pady=2)
+
+        ttk.Label(info_grid, text="Arquivo NR-37", style="CardText.TLabel").grid(row=2, column=0, sticky="w", pady=2)
+        self.nr37_label = ttk.Label(info_grid, text="-", style="CardText.TLabel")
+        self.nr37_label.grid(row=2, column=1, sticky="w", padx=(8, 0), pady=2)
+
+        ttk.Label(actions_card, text="Saída e processamento", style="CardTitle.TLabel").pack(anchor="w")
+
+        output_buttons_row = ttk.Frame(actions_card, style="Card.TFrame")
+        output_buttons_row.pack(anchor="w", pady=(6, 6))
+
+        ttk.Button(
+            output_buttons_row,
+            text="Selecionar pasta",
+            command=self.select_output_folder,
+        ).pack(side="left")
+
+        self.open_output_button = ttk.Button(
+            output_buttons_row,
+            text="Abrir pasta",
+            command=self.open_output_folder,
+            state="disabled",
+        )
+        self.open_output_button.pack(side="left", padx=(6, 0))
+
+        self.output_label = ttk.Label(
+            actions_card,
+            text="Pasta de saída: nenhuma pasta selecionada.",
+            style="CardText.TLabel",
+        )
+        self.output_label.pack(anchor="w", pady=(0, 8))
+
+        self.process_button = ttk.Button(
+            actions_card,
+            text="Processar",
+            state="disabled",
+            command=self.process_files,
+            style="Primary.TButton",
+        )
+        self.process_button.pack(anchor="w")
+
+        self.status_line = ttk.Label(
+            actions_card,
+            text="Status: aguardando seleção dos arquivos.",
+            style="CardText.TLabel",
+        )
+        self.status_line.pack(anchor="w", pady=(8, 0))
+
+        lower_row = ttk.Frame(main_frame, style="App.TFrame")
+        lower_row.pack(fill="both", expand=True)
+
+        log_card = ttk.Frame(lower_row, style="Card.TFrame", padding=12)
+        log_card.pack(side="left", fill="both", expand=True)
+
+        summary_card = ttk.Frame(lower_row, style="Card.TFrame", padding=12)
+        summary_card.pack(side="left", fill="both", expand=True, padx=(8, 0))
+
+        ttk.Label(log_card, text="Andamento", style="CardTitle.TLabel").pack(anchor="w")
+
+        self.log_text = tk.Text(
+            log_card,
+            height=14,
+            wrap="word",
+            font=("Segoe UI", 10),
+            state="disabled",
+            relief="solid",
+            bd=1,
+            highlightthickness=0,
+            bg="#fafbfc",
+        )
+        self.log_text.pack(fill="both", expand=True, pady=(6, 0))
 
         ttk.Label(summary_card, text="Resumo da seleção", style="CardTitle.TLabel").pack(anchor="w")
 
@@ -141,7 +233,7 @@ class MainWindow:
             text="Nenhum arquivo selecionado.",
             style="CardText.TLabel",
         )
-        self.summary_line_1.pack(anchor="w", pady=(10, 4))
+        self.summary_line_1.pack(anchor="w", pady=(6, 4))
 
         self.summary_line_2 = ttk.Label(
             summary_card,
@@ -157,97 +249,23 @@ class MainWindow:
         )
         self.summary_line_3.pack(anchor="w", pady=4)
 
-        ttk.Label(output_card, text="Pasta de saída", style="CardTitle.TLabel").pack(anchor="w")
-
-        output_buttons_row = ttk.Frame(output_card, style="Card.TFrame")
-        output_buttons_row.pack(anchor="w", pady=(10, 8))
-
-        ttk.Button(
-            output_buttons_row,
-            text="Selecionar pasta",
-            command=self.select_output_folder,
-        ).pack(side="left")
-
-        self.open_output_button = ttk.Button(
-            output_buttons_row,
-            text="Abrir pasta",
-            command=self.open_output_folder,
-            state="disabled",
-        )
-        self.open_output_button.pack(side="left", padx=(8, 0))
-
-        self.output_label = ttk.Label(
-            output_card,
-            text="Nenhuma pasta selecionada.",
-            style="CardText.TLabel",
-        )
-        self.output_label.pack(anchor="w")
-
-        action_row = ttk.Frame(content_frame, style="App.TFrame")
-        action_row.pack(fill="x", pady=(0, 12))
-
-        action_card = ttk.Frame(action_row, style="Card.TFrame", padding=14)
-        action_card.pack(fill="x")
-
-        ttk.Label(action_card, text="Ações", style="CardTitle.TLabel").pack(anchor="w")
-
-        buttons_row = ttk.Frame(action_card, style="Card.TFrame")
-        buttons_row.pack(anchor="w", pady=(10, 8))
-
-        self.process_button = ttk.Button(
-            buttons_row,
-            text="Processar",
-            state="disabled",
-            command=self.process_files,
-            style="Primary.TButton",
-        )
-        self.process_button.pack(side="left")
-
         self.open_report_button = ttk.Button(
-            buttons_row,
+            summary_card,
             text="Abrir relatório",
             state="disabled",
             command=self.open_report,
         )
-        self.open_report_button.pack(side="left", padx=(8, 0))
-
-        self.status_line = ttk.Label(
-            action_card,
-            text="Aguardando seleção dos arquivos.",
-            style="CardText.TLabel",
-        )
-        self.status_line.pack(anchor="w")
-
-        status_row = ttk.Frame(content_frame, style="App.TFrame")
-        status_row.pack(fill="both", expand=True)
-
-        status_card = ttk.Frame(status_row, style="Card.TFrame", padding=14)
-        status_card.pack(fill="both", expand=True)
-
-        ttk.Label(status_card, text="Andamento", style="CardTitle.TLabel").pack(anchor="w")
-
-        self.log_text = tk.Text(
-            status_card,
-            height=10,
-            wrap="word",
-            font=("Segoe UI", 10),
-            state="disabled",
-            relief="solid",
-            bd=1,
-            highlightthickness=0,
-            bg="#fafbfc",
-        )
-        self.log_text.pack(fill="both", expand=True, pady=(10, 0))
+        self.open_report_button.pack(anchor="w", pady=(10, 0))
 
         footer_label = ttk.Label(
             main_frame,
-            text=f"Desenvolvido por {APP_AUTHOR} | {APP_CONTACT_EMAIL}",
+            text=f"{APP_AUTHOR} • {APP_CONTACT_EMAIL}",
             style="Footer.TLabel",
         )
-        footer_label.pack(anchor="center", pady=(14, 0))
+        footer_label.pack(anchor="center", pady=(10, 0))
 
     def _set_status(self, message: str):
-        self.status_line.config(text=message)
+        self.status_line.config(text=f"Status: {message}")
 
     def _reset_log(self):
         self.log_text.config(state="normal")
@@ -263,7 +281,6 @@ class MainWindow:
     def _update_buttons(self):
         self.open_output_button.config(state="normal" if self.output_folder else "disabled")
 
-        report_exists = False
         if self.last_report_path:
             report_exists = Path(self.last_report_path).exists()
         else:
@@ -287,25 +304,32 @@ class MainWindow:
         self.summary_line_2.config(text="")
         self.summary_line_3.config(text="")
 
-    def on_mode_change(self):
+    def _reset_identification(self):
+        self.person_label.config(text="-")
+        self.nrs_label.config(text="-")
+        self.nr37_label.config(text="-")
+
+    def on_mode_change(self, initial=False):
         self.selected_files = []
         self.individual_ready = False
         self.batch_ready = False
 
         self.selected_files_box.delete(0, "end")
         self._reset_summary()
-        self._reset_log()
+        self._reset_identification()
+        if not initial:
+            self._reset_log()
 
         if self.mode_var.get() == "individual":
             self.mode_help_label.config(
                 text="No individual, você pode processar 1 ou 2 PDFs de um único colaborador."
             )
-            self._set_status("Modo individual selecionado.")
+            self._set_status("modo individual selecionado.")
         else:
             self.mode_help_label.config(
                 text="No lote, apenas colaboradores com NRS e NR-37 completos serão processados."
             )
-            self._set_status("Modo lote selecionado.")
+            self._set_status("modo lote selecionado.")
 
         self._update_buttons()
 
@@ -315,7 +339,7 @@ class MainWindow:
         if current_mode == "individual":
             title = "Selecione 1 ou 2 PDFs de um colaborador"
         else:
-            title = "Selecione varios PDFs para processamento em lote"
+            title = "Selecione vários PDFs para processamento em lote"
 
         file_paths = filedialog.askopenfilenames(
             title=title,
@@ -332,6 +356,8 @@ class MainWindow:
         for file_path in self.selected_files:
             self.selected_files_box.insert("end", Path(file_path).name)
 
+        self._reset_identification()
+
         if current_mode == "individual":
             self._analyze_individual_selection()
         else:
@@ -344,14 +370,14 @@ class MainWindow:
 
         if not self.selected_files:
             self._reset_summary()
-            self._set_status("Aguardando seleção dos arquivos.")
+            self._set_status("aguardando seleção dos arquivos.")
             return
 
         if len(self.selected_files) > 2:
             self.summary_line_1.config(text="Seleção inválida para o modo individual.")
             self.summary_line_2.config(text="No modo individual, selecione no máximo 2 PDFs.")
             self.summary_line_3.config(text="")
-            self._set_status("Ajuste a seleção dos arquivos.")
+            self._set_status("ajuste a seleção dos arquivos.")
             self.log("No modo individual, selecione no máximo 2 PDFs.")
             return
 
@@ -369,50 +395,54 @@ class MainWindow:
 
         collaborator_name = next(iter(detected_names)) if len(detected_names) == 1 else "-"
 
+        self.person_label.config(text=collaborator_name)
+        self.nrs_label.config(text=Path(nrs_files[0].original_path).name if nrs_files else "-")
+        self.nr37_label.config(text=Path(nr37_files[0].original_path).name if nr37_files else "-")
+
         self.summary_line_1.config(text=f"Colaborador: {collaborator_name}")
         self.summary_line_2.config(
             text=f"Arquivos detectados: NRS={len(nrs_files)} | NR-37={len(nr37_files)}"
         )
 
         if unidentified_files:
-            self.summary_line_3.config(text="Ha arquivo(s) que nao puderam ser identificados.")
-            self._set_status("Ajuste a seleção dos arquivos.")
-            self.log("Existe arquivo que nao foi identificado como NRS ou NR-37.")
+            self.summary_line_3.config(text="Há arquivo(s) que não puderam ser identificados.")
+            self._set_status("ajuste a seleção dos arquivos.")
+            self.log("Existe arquivo que não foi identificado como NRS ou NR-37.")
             return
 
         if len(detected_names) > 1:
             self.summary_line_3.config(text="Os arquivos parecem ser de colaboradores diferentes.")
-            self._set_status("Ajuste a seleção dos arquivos.")
+            self._set_status("ajuste a seleção dos arquivos.")
             self.log("Os arquivos selecionados parecem pertencer a pessoas diferentes.")
             return
 
         if len(nrs_files) > 1:
             self.summary_line_3.config(text="Existe mais de um arquivo NRS selecionado.")
-            self._set_status("Ajuste a seleção dos arquivos.")
+            self._set_status("ajuste a seleção dos arquivos.")
             self.log("Existe mais de um arquivo NRS selecionado.")
             return
 
         if len(nr37_files) > 1:
             self.summary_line_3.config(text="Existe mais de um arquivo NR-37 selecionado.")
-            self._set_status("Ajuste a seleção dos arquivos.")
+            self._set_status("ajuste a seleção dos arquivos.")
             self.log("Existe mais de um arquivo NR-37 selecionado.")
             return
 
         if len(nrs_files) == 0 and len(nr37_files) == 0:
-            self.summary_line_3.config(text="Nenhum arquivo valido foi encontrado.")
-            self._set_status("Ajuste a seleção dos arquivos.")
-            self.log("Nenhum arquivo valido foi encontrado.")
+            self.summary_line_3.config(text="Nenhum arquivo válido foi encontrado.")
+            self._set_status("ajuste a seleção dos arquivos.")
+            self.log("Nenhum arquivo válido foi encontrado.")
             return
 
         if len(nrs_files) == 1 and len(nr37_files) == 1:
             self.summary_line_3.config(text="Seleção completa. Os dois PDFs podem ser processados.")
         elif len(nrs_files) == 1:
-            self.summary_line_3.config(text="Seleção parcial. Apenas o NRS sera processado.")
+            self.summary_line_3.config(text="Seleção parcial. Apenas o NRS será processado.")
         else:
-            self.summary_line_3.config(text="Seleção parcial. Apenas o NR-37 sera processado.")
+            self.summary_line_3.config(text="Seleção parcial. Apenas o NR-37 será processado.")
 
         self.individual_ready = True
-        self._set_status("Tudo pronto para processar no modo individual.")
+        self._set_status("tudo pronto para processar no modo individual.")
         self.log("Arquivos validados para o modo individual.")
 
     def _analyze_batch_selection(self):
@@ -420,7 +450,7 @@ class MainWindow:
 
         if not self.selected_files:
             self._reset_summary()
-            self._set_status("Aguardando seleção dos arquivos.")
+            self._set_status("aguardando seleção dos arquivos.")
             return
 
         grouping_result = group_pdf_files_for_batch(self.selected_files)
@@ -438,30 +468,32 @@ class MainWindow:
             text=f"Grupos identificados: {len(grouping_result.groups)}"
         )
         self.summary_line_2.config(
-            text=(
-                f"Prontos para processar: {processable_groups} | "
-                f"Nao processados na analise: {skipped_groups}"
-            )
+            text=f"Prontos para processar: {processable_groups} | Não processados na análise: {skipped_groups}"
         )
         self.summary_line_3.config(
-            text=f"Arquivos nao identificados: {len(grouping_result.unidentified_files)}"
+            text=f"Arquivos não identificados: {len(grouping_result.unidentified_files)}"
         )
 
-        self.batch_ready = len(self.selected_files) > 0
-        if processable_groups > 0:
-            self._set_status("Lote analisado. Ha colaboradores prontos para processar.")
-        else:
-            self._set_status("Lote analisado. Nenhum colaborador completo foi encontrado.")
+        self.person_label.config(text="-")
+        self.nrs_label.config(text="-")
+        self.nr37_label.config(text="-")
 
-        self.log("Analise do lote concluida.")
+        self.batch_ready = len(self.selected_files) > 0
+
+        if processable_groups > 0:
+            self._set_status("lote analisado. há colaboradores prontos para processar.")
+        else:
+            self._set_status("lote analisado. nenhum colaborador completo foi encontrado.")
+
+        self.log("Análise do lote concluída.")
         self.log(f"Grupos encontrados: {len(grouping_result.groups)}")
         self.log(f"Grupos prontos: {processable_groups}")
 
         if skipped_groups > 0:
-            self.log(f"Grupos nao processaveis nesta analise: {skipped_groups}")
+            self.log(f"Grupos não processáveis nesta análise: {skipped_groups}")
 
         if len(grouping_result.unidentified_files) > 0:
-            self.log(f"Arquivos nao identificados: {len(grouping_result.unidentified_files)}")
+            self.log(f"Arquivos não identificados: {len(grouping_result.unidentified_files)}")
 
     def select_output_folder(self):
         folder_path = filedialog.askdirectory(title="Selecione a pasta de saída")
@@ -470,7 +502,7 @@ class MainWindow:
             return
 
         self.output_folder = folder_path
-        self.output_label.config(text=self.output_folder)
+        self.output_label.config(text=f"Pasta de saída: {self.output_folder}")
         self.log("Pasta de saída selecionada com sucesso.")
         self._update_buttons()
 
@@ -507,11 +539,11 @@ class MainWindow:
 
             if current_mode == "individual":
                 if not self.individual_ready:
-                    messagebox.showwarning("Aviso", "A seleção atual nao esta pronta para processamento.")
+                    messagebox.showwarning("Aviso", "A seleção atual não está pronta para processamento.")
                     self._update_buttons()
                     return
 
-                self._set_status("Processando no modo individual...")
+                self._set_status("processando no modo individual...")
                 self.log("Iniciando processamento individual...")
 
                 result = process_individual_files(
@@ -526,7 +558,7 @@ class MainWindow:
                     self._update_buttons()
                     return
 
-                self._set_status("Processando no modo lote...")
+                self._set_status("processando no modo lote...")
                 self.log("Iniciando processamento em lote...")
 
                 result = process_batch_files(
@@ -539,16 +571,16 @@ class MainWindow:
             self._update_buttons()
 
             if result.success:
-                self._set_status("Processamento concluído com sucesso.")
+                self._set_status("processamento concluído com sucesso.")
                 self.log(result.message)
                 messagebox.showinfo("Concluído", result.message)
             else:
-                self._set_status("Processamento concluído com observações.")
+                self._set_status("processamento concluído com observações.")
                 self.log(result.message)
                 messagebox.showwarning("Atenção", result.message)
 
         except Exception as error:
             self.log(str(error))
-            self._set_status("Ocorreu um problema no processamento.")
+            self._set_status("ocorreu um problema no processamento.")
             messagebox.showerror("Erro", str(error))
             self._update_buttons()
