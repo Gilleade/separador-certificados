@@ -2,7 +2,7 @@
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_submodules
 
-project_root = Path(__file__).resolve().parent
+project_root = Path(".").resolve()
 icon_file = project_root / "assets" / "app_icon.ico"
 
 datas = []
