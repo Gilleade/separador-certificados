@@ -48,7 +48,72 @@ class MainWindow:
         style.configure("SubHeader.TLabel", background="#eef2f7", font=("Segoe UI", 10))
         style.configure("Author.TLabel", background="#eef2f7", font=("Segoe UI", 9))
         style.configure("Footer.TLabel", background="#eef2f7", font=("Segoe UI", 9))
-        style.configure("Primary.TButton", font=("Segoe UI", 10))
+        
+        style.configure(
+            "Primary.TButton",
+            font=("Segoe UI", 10),
+            padding=(16, 9),
+            background="#2F2F2F",
+            foreground="#FFFFFF",
+            borderwidth=0,
+            relief="flat",
+            focusthickness=0,
+        )
+
+        style.map(
+            "Primary.TButton",
+            background=[
+                ("active", "#1F1F1F"),
+                ("disabled", "#BDBDBD"),
+            ],
+            foreground=[
+                ("disabled", "#F5F5F5"),
+            ],
+        )
+
+        style.configure(
+            "Secondary.TButton",
+            font=("Segoe UI", 10),
+            padding=(14, 9),
+            background="#D9D9D9",
+            foreground="#111111",
+            borderwidth=0,
+            relief="flat",
+            focusthickness=0,
+        )
+
+        style.map(
+            "Secondary.TButton",
+            background=[
+                ("active", "#C8C8C8"),
+                ("disabled", "#ECECEC"),
+            ],
+            foreground=[
+                ("disabled", "#8A8A8A"),
+            ],
+        )
+
+        style.configure(
+            "Ghost.TButton",
+            font=("Segoe UI", 10),
+            padding=(12, 8),
+            background="#F2F2F2",
+            foreground="#222222",
+            borderwidth=0,
+            relief="flat",
+            focusthickness=0,
+        )
+
+        style.map(
+            "Ghost.TButton",
+            background=[
+                ("active", "#E6E6E6"),
+                ("disabled", "#F7F7F7"),
+            ],
+            foreground=[
+                ("disabled", "#9A9A9A"),
+            ],
+        )
 
     def _build_ui(self):
         main_frame = ttk.Frame(self.root, padding=16, style="App.TFrame")
@@ -75,31 +140,78 @@ class MainWindow:
             style="Author.TLabel",
         ).pack(anchor="w", pady=(2, 0))
 
-        top_row = ttk.Frame(main_frame, style="App.TFrame")
-        top_row.pack(fill="x", pady=(0, 8))
+        upper_area = ttk.Frame(main_frame, style="App.TFrame")
+        upper_area.pack(fill="both", expand=False, pady=(0, 8))
 
-        mode_card = ttk.Frame(top_row, style="Card.TFrame", padding=12)
-        mode_card.pack(side="left", fill="both", expand=True)
+        left_column = ttk.Frame(upper_area, style="App.TFrame")
+        left_column.pack(side="left", fill="both", expand=True)
 
-        files_card = ttk.Frame(top_row, style="Card.TFrame", padding=12)
-        files_card.pack(side="left", fill="both", expand=True, padx=(8, 0))
+        right_column = ttk.Frame(upper_area, style="App.TFrame")
+        right_column.pack(side="left", fill="both", expand=True, padx=(8, 0))
+
+        mode_card = tk.Frame(
+            left_column,
+            bg="#ffffff",
+            highlightbackground="#dbe4ee",
+            highlightthickness=1,
+            bd=0,
+            padx=12,
+            pady=12,
+        )
+        mode_card.pack(fill="x", pady=(0, 8))
+
+        actions_card = tk.Frame(
+            left_column,
+            bg="#ffffff",
+            highlightbackground="#dbe4ee",
+            highlightthickness=1,
+            bd=0,
+            padx=12,
+            pady=12,
+        )
+        actions_card.pack(fill="x")
+
+        files_card = tk.Frame(
+            right_column,
+            bg="#ffffff",
+            highlightbackground="#dbe4ee",
+            highlightthickness=1,
+            bd=0,
+            padx=12,
+            pady=12,
+        )
+        files_card.pack(fill="both", expand=True)
 
         ttk.Label(mode_card, text="Modo de uso", style="CardTitle.TLabel").pack(anchor="w")
 
-        ttk.Radiobutton(
+        tk.Radiobutton(
             mode_card,
             text="Processamento em lote",
             value="batch",
             variable=self.mode_var,
             command=self.on_mode_change,
+            bg="#ffffff",
+            activebackground="#ffffff",
+            selectcolor="#ffffff",
+            highlightthickness=0,
+            bd=0,
+            font=("Segoe UI", 10),
+            anchor="w",
         ).pack(anchor="w", pady=(6, 2))
 
-        ttk.Radiobutton(
+        tk.Radiobutton(
             mode_card,
             text="Processamento individual",
             value="individual",
             variable=self.mode_var,
             command=self.on_mode_change,
+            bg="#ffffff",
+            activebackground="#ffffff",
+            selectcolor="#ffffff",
+            highlightthickness=0,
+            bd=0,
+            font=("Segoe UI", 10),
+            anchor="w",
         ).pack(anchor="w", pady=(0, 2))
 
         self.mode_help_label = ttk.Label(
@@ -115,38 +227,36 @@ class MainWindow:
 
         self.select_files_button = ttk.Button(
             files_card,
-            text="Selecionar PDFs",
+            text="Escolher PDFs",
             command=self.select_pdf_files,
-            style="Primary.TButton",
+            style="Secondary.TButton",
         )
         self.select_files_button.pack(anchor="w", pady=(6, 8))
 
         self.selected_files_box = tk.Listbox(
             files_card,
-            height=8,
+            height=10,
             font=("Segoe UI", 9),
             activestyle="none",
-            relief="solid",
-            bd=1,
-            highlightthickness=0,
+            relief="flat",
+            bd=0,
+            highlightthickness=1,
+            highlightbackground="#dbe4ee",
+            highlightcolor="#93c5fd",
+            bg="#fbfdff",
         )
         self.selected_files_box.pack(fill="both", expand=True)
-
-        middle_row = ttk.Frame(main_frame, style="App.TFrame")
-        middle_row.pack(fill="x", pady=(0, 8))
-
-        actions_card = ttk.Frame(middle_row, style="Card.TFrame", padding=12)
-        actions_card.pack(fill="x", expand=True)
 
         ttk.Label(actions_card, text="Saída e processamento", style="CardTitle.TLabel").pack(anchor="w")
 
         output_buttons_row = ttk.Frame(actions_card, style="Card.TFrame")
-        output_buttons_row.pack(anchor="w", pady=(6, 6))
+        output_buttons_row.pack(anchor="w", pady=(4, 4))
 
         ttk.Button(
             output_buttons_row,
-            text="Selecionar pasta",
+            text="Escolher pasta",
             command=self.select_output_folder,
+            style="Secondary.TButton",
         ).pack(side="left")
 
         self.open_output_button = ttk.Button(
@@ -154,6 +264,7 @@ class MainWindow:
             text="Abrir pasta",
             command=self.open_output_folder,
             state="disabled",
+            style="Secondary.TButton",
         )
         self.open_output_button.pack(side="left", padx=(6, 0))
 
@@ -162,7 +273,7 @@ class MainWindow:
             text="Processar",
             state="disabled",
             command=self.process_files,
-            style="Primary.TButton",
+            style="Secondary.TButton",
         )
         self.process_button.pack(side="left", padx=(6, 0))
 
@@ -171,7 +282,7 @@ class MainWindow:
             text="Pasta de saída: nenhuma pasta selecionada.",
             style="CardText.TLabel",
         )
-        self.output_label.pack(anchor="w", pady=(0, 6))
+        self.output_label.pack(anchor="w", pady=(0, 4))
 
         self.status_line = ttk.Label(
             actions_card,
@@ -183,11 +294,29 @@ class MainWindow:
         lower_row = ttk.Frame(main_frame, style="App.TFrame")
         lower_row.pack(fill="both", expand=True)
 
-        log_card = ttk.Frame(lower_row, style="Card.TFrame", padding=12)
+        log_card = tk.Frame(
+            lower_row,
+            bg="#ffffff",
+            highlightbackground="#dbe4ee",
+            highlightthickness=1,
+            bd=0,
+            padx=12,
+            pady=12,
+        )
         log_card.pack(side="left", fill="both", expand=True)
 
-        summary_card = ttk.Frame(lower_row, style="Card.TFrame", padding=12)
-        summary_card.pack(side="left", fill="both", expand=True, padx=(8, 0))
+        summary_card = tk.Frame(
+            lower_row,
+            bg="#ffffff",
+            highlightbackground="#dbe4ee",
+            highlightthickness=1,
+            bd=0,
+            width=280,
+            padx=12,
+            pady=12,
+        )
+        summary_card.pack(side="left", fill="y", expand=False, padx=(8, 0))
+        summary_card.pack_propagate(False)
 
         ttk.Label(log_card, text="Andamento", style="CardTitle.TLabel").pack(anchor="w")
 
@@ -238,6 +367,7 @@ class MainWindow:
             text="Abrir relatório",
             state="disabled",
             command=self.open_report,
+            style="Ghost.TButton",
         )
         self.open_report_button.pack(anchor="w", pady=(10, 0))
 
